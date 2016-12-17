@@ -3,7 +3,7 @@
 System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-path', 'aurelia-loader', 'aurelia-dependency-injection', 'aurelia-binding', 'aurelia-task-queue'], function (_export, _context) {
   "use strict";
 
-  var LogManager, metadata, Origin, protocol, DOM, PLATFORM, FEATURE, relativeToFile, TemplateRegistryEntry, Loader, inject, Container, resolver, Binding, createOverrideContext, ValueConverterResource, BindingBehaviorResource, subscriberCollection, bindingMode, ObserverLocator, EventManager, TaskQueue, _createClass, _class4, _temp, _dec, _class5, _dec2, _class6, _dec3, _class7, _dec4, _class8, _dec5, _class9, _class10, _temp2, _dec6, _class11, _class12, _temp3, _class15, _dec7, _class17, _dec8, _class18, _class19, _temp4, _dec9, _class21, _dec10, _class22, _dec11, _class23, _typeof, animationEvent, Animator, CompositionTransactionNotifier, CompositionTransactionOwnershipToken, CompositionTransaction, capitalMatcher, ViewEngineHooksResource, ElementEvents, ResourceLoadContext, ViewCompileInstruction, BehaviorInstruction, TargetInstruction, viewStrategy, RelativeViewStrategy, ConventionalViewStrategy, NoViewStrategy, TemplateRegistryViewStrategy, InlineViewStrategy, ViewLocator, BindingLanguage, noNodes, SlotCustomAttribute, PassThroughSlot, ShadowSlot, ShadowDOM, ViewResources, View, ViewSlot, ProviderResolver, providerResolverInstance, BoundViewFactory, ViewFactory, nextInjectorId, lastAUTargetID, ViewCompiler, ResourceModule, ResourceDescription, ModuleAnalyzer, logger, ProxyViewFactory, ViewEngine, Controller, BehaviorPropertyObserver, BindableProperty, lastProviderId, HtmlBehaviorResource, ChildObserver, noMutations, ChildObserverBinder, CompositionEngine, ElementConfigResource, defaultShadowDOMOptions, TemplatingEngine;
+  var LogManager, metadata, Origin, protocol, DOM, PLATFORM, FEATURE, relativeToFile, TemplateRegistryEntry, Loader, inject, Container, resolver, Binding, createOverrideContext, ValueConverterResource, BindingBehaviorResource, subscriberCollection, bindingMode, ObserverLocator, EventManager, TaskQueue, _createClass, _class, _temp, _dec, _class2, _dec2, _class3, _dec3, _class4, _dec4, _class5, _dec5, _class6, _class7, _temp2, _dec6, _class8, _class9, _temp3, _class11, _dec7, _class13, _dec8, _class14, _class15, _temp4, _dec9, _class16, _dec10, _class17, _dec11, _class18, _typeof, animationEvent, Animator, CompositionTransactionNotifier, CompositionTransactionOwnershipToken, CompositionTransaction, capitalMatcher, ViewEngineHooksResource, ElementEvents, ResourceLoadContext, ViewCompileInstruction, BehaviorInstruction, TargetInstruction, viewStrategy, RelativeViewStrategy, ConventionalViewStrategy, NoViewStrategy, TemplateRegistryViewStrategy, InlineViewStrategy, ViewLocator, BindingLanguage, noNodes, SlotCustomAttribute, PassThroughSlot, ShadowSlot, ShadowDOM, ViewResources, View, ViewSlot, ProviderResolver, providerResolverInstance, BoundViewFactory, ViewFactory, nextInjectorId, lastAUTargetID, ViewCompiler, ResourceModule, ResourceDescription, ModuleAnalyzer, logger, ProxyViewFactory, ViewEngine, Controller, BehaviorPropertyObserver, BindableProperty, lastProviderId, HtmlBehaviorResource, ChildObserver, noMutations, ChildObserverBinder, CompositionEngine, ElementConfigResource, defaultShadowDOMOptions, TemplatingEngine;
 
   
 
@@ -282,8 +282,8 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
           element.setAttribute('style', styleObjectToString(styleObject));
         }
       } else {
-          element.setAttribute(key, values[key]);
-        }
+        element.setAttribute(key, values[key]);
+      }
     }
 
     if (behaviorInstructions.length) {
@@ -385,16 +385,18 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
     return loader.loadTemplate(urlOrRegistryEntry);
   }
 
-  function getObserver(behavior, instance, name) {
+  function getObserver(instance, name) {
     var lookup = instance.__observers__;
 
     if (lookup === undefined) {
-      if (!behavior.isInitialized) {
-        behavior.initialize(Container.instance || new Container(), instance.constructor);
+      var ctor = Object.getPrototypeOf(instance).constructor;
+      var _behavior = metadata.get(metadata.resource, ctor);
+      if (!_behavior.isInitialized) {
+        _behavior.initialize(Container.instance || new Container(), instance.constructor);
       }
 
-      lookup = behavior.observerLocator.getOrCreateObserversLookup(instance);
-      behavior._ensurePropertiesDefined(instance, lookup);
+      lookup = _behavior.observerLocator.getOrCreateObserversLookup(instance);
+      _behavior._ensurePropertiesDefined(instance, lookup);
     }
 
     return lookup[name];
@@ -458,8 +460,8 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
     var bindersLength = binders.length;
     var groupedMutations = new Map();
 
-    for (var i = 0, ii = mutations.length; i < ii; ++i) {
-      var record = mutations[i];
+    for (var _i9 = 0, _ii9 = mutations.length; _i9 < _ii9; ++_i9) {
+      var record = mutations[_i9];
       var added = record.addedNodes;
       var removed = record.removedNodes;
 
@@ -779,7 +781,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
       _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
         return typeof obj;
       } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
       };
 
       _export('animationEvent', animationEvent = {
@@ -990,9 +992,9 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         ElementEvents.prototype.publish = function publish(eventName) {
-          var detail = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-          var bubbles = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
-          var cancelable = arguments.length <= 3 || arguments[3] === undefined ? true : arguments[3];
+          var detail = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+          var bubbles = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+          var cancelable = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
           var event = DOM.createCustomEvent(eventName, { cancelable: cancelable, bubbles: bubbles, detail: detail });
           this.element.dispatchEvent(event);
@@ -1001,7 +1003,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         ElementEvents.prototype.subscribe = function subscribe(eventName, handler) {
           var _this2 = this;
 
-          var bubbles = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+          var bubbles = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
           if (handler && typeof handler === 'function') {
             handler.eventName = eventName;
@@ -1022,7 +1024,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         ElementEvents.prototype.subscribeOnce = function subscribeOnce(eventName, handler) {
           var _this3 = this;
 
-          var bubbles = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+          var bubbles = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
           if (handler && typeof handler === 'function') {
             var _ret = function () {
@@ -1089,8 +1091,8 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
       _export('ResourceLoadContext', ResourceLoadContext);
 
       _export('ViewCompileInstruction', ViewCompileInstruction = function ViewCompileInstruction() {
-        var targetShadowDOM = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
-        var compileSurrogate = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+        var targetShadowDOM = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+        var compileSurrogate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
         
 
@@ -1169,7 +1171,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
       BehaviorInstruction.normal = new BehaviorInstruction();
 
-      _export('TargetInstruction', TargetInstruction = (_temp = _class4 = function () {
+      _export('TargetInstruction', TargetInstruction = (_temp = _class = function () {
         TargetInstruction.shadowSlot = function shadowSlot(parentInjectorId) {
           var instruction = new TargetInstruction();
           instruction.parentInjectorId = parentInjectorId;
@@ -1241,7 +1243,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         }
 
         return TargetInstruction;
-      }(), _class4.noExpressions = Object.freeze([]), _temp));
+      }(), _class.noExpressions = Object.freeze([]), _temp));
 
       _export('TargetInstruction', TargetInstruction);
 
@@ -1262,7 +1264,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
       _export('viewStrategy', viewStrategy);
 
-      _export('RelativeViewStrategy', RelativeViewStrategy = (_dec = viewStrategy(), _dec(_class5 = function () {
+      _export('RelativeViewStrategy', RelativeViewStrategy = (_dec = viewStrategy(), _dec(_class2 = function () {
         function RelativeViewStrategy(path) {
           
 
@@ -1286,11 +1288,11 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return RelativeViewStrategy;
-      }()) || _class5));
+      }()) || _class2));
 
       _export('RelativeViewStrategy', RelativeViewStrategy);
 
-      _export('ConventionalViewStrategy', ConventionalViewStrategy = (_dec2 = viewStrategy(), _dec2(_class6 = function () {
+      _export('ConventionalViewStrategy', ConventionalViewStrategy = (_dec2 = viewStrategy(), _dec2(_class3 = function () {
         function ConventionalViewStrategy(viewLocator, origin) {
           
 
@@ -1304,11 +1306,11 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return ConventionalViewStrategy;
-      }()) || _class6));
+      }()) || _class3));
 
       _export('ConventionalViewStrategy', ConventionalViewStrategy);
 
-      _export('NoViewStrategy', NoViewStrategy = (_dec3 = viewStrategy(), _dec3(_class7 = function () {
+      _export('NoViewStrategy', NoViewStrategy = (_dec3 = viewStrategy(), _dec3(_class4 = function () {
         function NoViewStrategy(dependencies, dependencyBaseUrl) {
           
 
@@ -1347,11 +1349,11 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return NoViewStrategy;
-      }()) || _class7));
+      }()) || _class4));
 
       _export('NoViewStrategy', NoViewStrategy);
 
-      _export('TemplateRegistryViewStrategy', TemplateRegistryViewStrategy = (_dec4 = viewStrategy(), _dec4(_class8 = function () {
+      _export('TemplateRegistryViewStrategy', TemplateRegistryViewStrategy = (_dec4 = viewStrategy(), _dec4(_class5 = function () {
         function TemplateRegistryViewStrategy(moduleId, entry) {
           
 
@@ -1371,11 +1373,11 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return TemplateRegistryViewStrategy;
-      }()) || _class8));
+      }()) || _class5));
 
       _export('TemplateRegistryViewStrategy', TemplateRegistryViewStrategy);
 
-      _export('InlineViewStrategy', InlineViewStrategy = (_dec5 = viewStrategy(), _dec5(_class9 = function () {
+      _export('InlineViewStrategy', InlineViewStrategy = (_dec5 = viewStrategy(), _dec5(_class6 = function () {
         function InlineViewStrategy(markup, dependencies, dependencyBaseUrl) {
           
 
@@ -1412,11 +1414,11 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return InlineViewStrategy;
-      }()) || _class9));
+      }()) || _class6));
 
       _export('InlineViewStrategy', InlineViewStrategy);
 
-      _export('ViewLocator', ViewLocator = (_temp2 = _class10 = function () {
+      _export('ViewLocator', ViewLocator = (_temp2 = _class7 = function () {
         function ViewLocator() {
           
         }
@@ -1483,7 +1485,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return ViewLocator;
-      }(), _class10.viewStrategyMetadataKey = 'aurelia:view-strategy', _temp2));
+      }(), _class7.viewStrategyMetadataKey = 'aurelia:view-strategy', _temp2));
 
       _export('ViewLocator', ViewLocator);
 
@@ -1511,7 +1513,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
       noNodes = Object.freeze([]);
 
-      _export('SlotCustomAttribute', SlotCustomAttribute = (_dec6 = inject(DOM.Element), _dec6(_class11 = function () {
+      _export('SlotCustomAttribute', SlotCustomAttribute = (_dec6 = inject(DOM.Element), _dec6(_class8 = function () {
         function SlotCustomAttribute(element) {
           
 
@@ -1522,7 +1524,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         SlotCustomAttribute.prototype.valueChanged = function valueChanged(newValue, oldValue) {};
 
         return SlotCustomAttribute;
-      }()) || _class11));
+      }()) || _class8));
 
       _export('SlotCustomAttribute', SlotCustomAttribute);
 
@@ -1861,7 +1863,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
       _export('ShadowSlot', ShadowSlot);
 
-      _export('ShadowDOM', ShadowDOM = (_temp3 = _class12 = function () {
+      _export('ShadowDOM', ShadowDOM = (_temp3 = _class9 = function () {
         function ShadowDOM() {
           
         }
@@ -1947,7 +1949,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return ShadowDOM;
-      }(), _class12.defaultSlotKey = '__au-default-slot-key__', _temp3));
+      }(), _class9.defaultSlotKey = '__au-default-slot-key__', _temp3));
 
       _export('ShadowDOM', ShadowDOM);
 
@@ -2318,7 +2320,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
       _export('ViewSlot', ViewSlot = function () {
         function ViewSlot(anchor, anchorIsContainer) {
-          var animator = arguments.length <= 2 || arguments[2] === undefined ? Animator.instance : arguments[2];
+          var animator = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Animator.instance;
 
           
 
@@ -2336,7 +2338,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         }
 
         ViewSlot.prototype.animateView = function animateView(view) {
-          var direction = arguments.length <= 1 || arguments[1] === undefined ? 'enter' : arguments[1];
+          var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'enter';
 
           var animatableElement = getAnimatableElement(view);
 
@@ -2736,7 +2738,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
       _export('ViewSlot', ViewSlot);
 
-      ProviderResolver = resolver(_class15 = function () {
+      ProviderResolver = resolver(_class11 = function () {
         function ProviderResolver() {
           
         }
@@ -2747,7 +2749,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return ProviderResolver;
-      }()) || _class15;
+      }()) || _class11;
       providerResolverInstance = new ProviderResolver();
 
       _export('BoundViewFactory', BoundViewFactory = function () {
@@ -2904,7 +2906,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
       nextInjectorId = 0;
       lastAUTargetID = 0;
 
-      _export('ViewCompiler', ViewCompiler = (_dec7 = inject(BindingLanguage, ViewResources), _dec7(_class17 = function () {
+      _export('ViewCompiler', ViewCompiler = (_dec7 = inject(BindingLanguage, ViewResources), _dec7(_class13 = function () {
         function ViewCompiler(bindingLanguage, resources) {
           
 
@@ -3169,11 +3171,11 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
                 }
               }
             } else if (elementInstruction) {
-                elementProperty = elementInstruction.type.attributes[info.attrName];
-                if (elementProperty) {
-                  info.defaultBindingMode = elementProperty.defaultBindingMode;
-                }
+              elementProperty = elementInstruction.type.attributes[info.attrName];
+              if (elementProperty) {
+                info.defaultBindingMode = elementProperty.defaultBindingMode;
               }
+            }
 
             if (elementProperty) {
               instruction = bindingLanguage.createAttributeInstruction(resources, node, info, elementInstruction);
@@ -3264,7 +3266,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return ViewCompiler;
-      }()) || _class17));
+      }()) || _class13));
 
       _export('ViewCompiler', ViewCompiler);
 
@@ -3540,7 +3542,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         return ProxyViewFactory;
       }();
 
-      _export('ViewEngine', ViewEngine = (_dec8 = inject(Loader, Container, ViewCompiler, ModuleAnalyzer, ViewResources), _dec8(_class18 = (_temp4 = _class19 = function () {
+      _export('ViewEngine', ViewEngine = (_dec8 = inject(Loader, Container, ViewCompiler, ModuleAnalyzer, ViewResources), _dec8(_class14 = (_temp4 = _class15 = function () {
         function ViewEngine(loader, container, viewCompiler, moduleAnalyzer, appResources) {
           
 
@@ -3723,7 +3725,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return ViewEngine;
-      }(), _class19.viewModelRequireMetadataKey = 'aurelia:view-model-require', _temp4)) || _class18));
+      }(), _class15.viewModelRequireMetadataKey = 'aurelia:view-model-require', _temp4)) || _class14));
 
       _export('ViewEngine', ViewEngine);
 
@@ -3820,11 +3822,11 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
             if (this.viewModel === scope.overrideContext.bindingContext) {
               overrideContext = scope.overrideContext;
             } else if (this.instruction.inheritBindingContext) {
-                overrideContext = createOverrideContext(this.viewModel, scope.overrideContext);
-              } else {
-                  overrideContext = createOverrideContext(this.viewModel);
-                  overrideContext.__parentOverrideContext = scope.overrideContext;
-                }
+              overrideContext = createOverrideContext(this.viewModel, scope.overrideContext);
+            } else {
+              overrideContext = createOverrideContext(this.viewModel);
+              overrideContext.__parentOverrideContext = scope.overrideContext;
+            }
 
             this.view.bind(this.viewModel, overrideContext);
           } else if (skipSelfSubscriber) {
@@ -3840,9 +3842,9 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
         Controller.prototype.unbind = function unbind() {
           if (this.isBound) {
-            var boundProperties = this.boundProperties;
-            var i = void 0;
-            var ii = void 0;
+            var _boundProperties = this.boundProperties;
+            var _i2 = void 0;
+            var _ii2 = void 0;
 
             this.isBound = false;
             this.scope = null;
@@ -3859,8 +3861,8 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
               this.elementEvents.disposeAll();
             }
 
-            for (i = 0, ii = boundProperties.length; i < ii; ++i) {
-              boundProperties[i].binding.unbind();
+            for (_i2 = 0, _ii2 = _boundProperties.length; _i2 < _ii2; ++_i2) {
+              _boundProperties[_i2].binding.unbind();
             }
           }
         };
@@ -3900,7 +3902,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
       _export('Controller', Controller);
 
-      _export('BehaviorPropertyObserver', BehaviorPropertyObserver = (_dec9 = subscriberCollection(), _dec9(_class21 = function () {
+      _export('BehaviorPropertyObserver', BehaviorPropertyObserver = (_dec9 = subscriberCollection(), _dec9(_class16 = function () {
         function BehaviorPropertyObserver(taskQueue, obj, propertyName, selfSubscriber, initialValue) {
           
 
@@ -3962,7 +3964,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return BehaviorPropertyObserver;
-      }()) || _class21));
+      }()) || _class16));
 
       _export('BehaviorPropertyObserver', BehaviorPropertyObserver);
 
@@ -3992,13 +3994,13 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
           if (descriptor) {
             this.descriptor = descriptor;
-            return this._configureDescriptor(behavior, descriptor);
+            return this._configureDescriptor(descriptor);
           }
 
           return undefined;
         };
 
-        BindableProperty.prototype._configureDescriptor = function _configureDescriptor(behavior, descriptor) {
+        BindableProperty.prototype._configureDescriptor = function _configureDescriptor(descriptor) {
           var name = this.name;
 
           descriptor.configurable = true;
@@ -4017,15 +4019,15 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
           }
 
           descriptor.get = function () {
-            return getObserver(behavior, this, name).getValue();
+            return getObserver(this, name).getValue();
           };
 
           descriptor.set = function (value) {
-            getObserver(behavior, this, name).setValue(value);
+            getObserver(this, name).setValue(value);
           };
 
           descriptor.get.getObserver = function (obj) {
-            return getObserver(behavior, obj, name);
+            return getObserver(obj, name);
           };
 
           return descriptor;
@@ -4283,6 +4285,8 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
             for (i = 0, ii = properties.length; i < ii; ++i) {
               properties[i].defineOn(target, this);
             }
+
+            this._copyInheritedProperties(container, target);
           }
         };
 
@@ -4437,8 +4441,8 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
                 if (instruction.anchorIsContainer) {
                   if (childBindings !== null) {
-                    for (var i = 0, ii = childBindings.length; i < ii; ++i) {
-                      controller.view.addBinding(childBindings[i].create(element, viewModel, controller));
+                    for (var _i3 = 0, _ii3 = childBindings.length; _i3 < _ii3; ++_i3) {
+                      controller.view.addBinding(childBindings[_i3].create(element, viewModel, controller));
                     }
                   }
 
@@ -4447,26 +4451,26 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
                   controller.view.insertNodesBefore(viewHost);
                 }
               } else if (childBindings !== null) {
-                for (var _i2 = 0, _ii2 = childBindings.length; _i2 < _ii2; ++_i2) {
-                  bindings.push(childBindings[_i2].create(element, viewModel, controller));
+                for (var _i4 = 0, _ii4 = childBindings.length; _i4 < _ii4; ++_i4) {
+                  bindings.push(childBindings[_i4].create(element, viewModel, controller));
                 }
               }
             } else if (controller.view) {
               controller.view.controller = controller;
 
               if (childBindings !== null) {
-                for (var _i3 = 0, _ii3 = childBindings.length; _i3 < _ii3; ++_i3) {
-                  controller.view.addBinding(childBindings[_i3].create(instruction.host, viewModel, controller));
+                for (var _i5 = 0, _ii5 = childBindings.length; _i5 < _ii5; ++_i5) {
+                  controller.view.addBinding(childBindings[_i5].create(instruction.host, viewModel, controller));
                 }
               }
             } else if (childBindings !== null) {
-              for (var _i4 = 0, _ii4 = childBindings.length; _i4 < _ii4; ++_i4) {
-                bindings.push(childBindings[_i4].create(instruction.host, viewModel, controller));
+              for (var _i6 = 0, _ii6 = childBindings.length; _i6 < _ii6; ++_i6) {
+                bindings.push(childBindings[_i6].create(instruction.host, viewModel, controller));
               }
             }
           } else if (childBindings !== null) {
-            for (var _i5 = 0, _ii5 = childBindings.length; _i5 < _ii5; ++_i5) {
-              bindings.push(childBindings[_i5].create(element, viewModel, controller));
+            for (var _i7 = 0, _ii7 = childBindings.length; _i7 < _ii7; ++_i7) {
+              bindings.push(childBindings[_i7].create(element, viewModel, controller));
             }
           }
 
@@ -4500,6 +4504,43 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
             if (observer !== undefined) {
               lookup[observer.propertyName] = observer;
             }
+          }
+        };
+
+        HtmlBehaviorResource.prototype._copyInheritedProperties = function _copyInheritedProperties(container, target) {
+          var _this14 = this;
+
+          var behavior = void 0,
+              derived = target;
+          while (true) {
+            var proto = Object.getPrototypeOf(target.prototype);
+            target = proto && proto.constructor;
+            if (!target) {
+              return;
+            }
+            behavior = metadata.getOwn(metadata.resource, target);
+            if (behavior) {
+              break;
+            }
+          }
+          behavior.initialize(container, target);
+
+          var _loop = function _loop(_i8, _ii8) {
+            var prop = behavior.properties[_i8];
+
+            if (_this14.properties.some(function (p) {
+              return p.name === prop.name;
+            })) {
+              return 'continue';
+            }
+
+            new BindableProperty(prop).registerWith(derived, _this14);
+          };
+
+          for (var _i8 = 0, _ii8 = behavior.properties.length; _i8 < _ii8; ++_i8) {
+            var _ret2 = _loop(_i8, _ii8);
+
+            if (_ret2 === 'continue') continue;
           }
         };
 
@@ -4559,8 +4600,8 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
             if (assignedSlot && assignedSlot.projectFromAnchors) {
               var anchors = assignedSlot.projectFromAnchors;
 
-              for (var i = 0, ii = anchors.length; i < ii; ++i) {
-                if (anchors[i].auOwnerView === contentView) {
+              for (var _i10 = 0, _ii10 = anchors.length; _i10 < _ii10; ++_i10) {
+                if (anchors[_i10].auOwnerView === contentView) {
                   return true;
                 }
               }
@@ -4696,7 +4737,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         return ChildObserverBinder;
       }();
 
-      _export('CompositionEngine', CompositionEngine = (_dec10 = inject(ViewEngine, ViewLocator), _dec10(_class22 = function () {
+      _export('CompositionEngine', CompositionEngine = (_dec10 = inject(ViewEngine, ViewLocator), _dec10(_class17 = function () {
         function CompositionEngine(viewEngine, viewLocator) {
           
 
@@ -4735,7 +4776,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         CompositionEngine.prototype.createController = function createController(context) {
-          var _this14 = this;
+          var _this15 = this;
 
           var childContainer = void 0;
           var viewModel = void 0;
@@ -4748,7 +4789,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
             viewModelResource = context.viewModelResource;
             m = viewModelResource.metadata;
 
-            var viewStrategy = _this14.viewLocator.getViewStrategy(context.view || viewModel);
+            var viewStrategy = _this15.viewLocator.getViewStrategy(context.view || viewModel);
 
             if (context.viewResources) {
               viewStrategy.makeRelativeTo(context.viewResources.viewUrl);
@@ -4843,7 +4884,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return CompositionEngine;
-      }()) || _class22));
+      }()) || _class17));
 
       _export('CompositionEngine', CompositionEngine);
 
@@ -4869,7 +4910,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
 
       defaultShadowDOMOptions = { mode: 'open' };
 
-      _export('TemplatingEngine', TemplatingEngine = (_dec11 = inject(Container, ModuleAnalyzer, ViewCompiler, CompositionEngine), _dec11(_class23 = function () {
+      _export('TemplatingEngine', TemplatingEngine = (_dec11 = inject(Container, ModuleAnalyzer, ViewCompiler, CompositionEngine), _dec11(_class18 = function () {
         function TemplatingEngine(container, moduleAnalyzer, viewCompiler, compositionEngine) {
           
 
@@ -4909,7 +4950,7 @@ System.register(['aurelia-logging', 'aurelia-metadata', 'aurelia-pal', 'aurelia-
         };
 
         return TemplatingEngine;
-      }()) || _class23));
+      }()) || _class18));
 
       _export('TemplatingEngine', TemplatingEngine);
     }
